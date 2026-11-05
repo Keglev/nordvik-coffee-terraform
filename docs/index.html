@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nordvik Coffee - Project Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .section-icon {
+            font-size: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .section-count {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .file-list {
+            display: grid;
+            gap: 12px;
+        }
+        
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: #f7fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .file-item:hover {
+            background: #edf2f7;
+            border-color: #667eea;
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+        
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+        
+        .file-number {
+            background: #667eea;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .file-name {
+            font-weight: 600;
+            color: #2d3748;
+            flex: 1;
+        }
+        
+        .file-size {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-left: auto;
+            margin-right: 16px;
+        }
+        
+        .file-link {
+            background: #667eea;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .file-link:hover {
+            background: #5a67d8;
+            transform: scale(1.05);
+        }
+        
+        .download-all {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 12px;
+            margin: 40px 0;
+            text-align: center;
+        }
+        
+        .download-all h3 {
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+        }
+        
+        .download-all code {
+            background: rgba(0,0,0,0.2);
+            padding: 12px 20px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-top: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            background: #2d3748;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            font-size: 0.9rem;
+        }
+        
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: #48bb78;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .file-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .file-size {
+                margin-left: 0;
+                margin-right: 0;
+            }
+            
+            .file-link {
+                align-self: stretch;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>☕ Nordvik Coffee</h1>
+            <p>Project Documentation & Infrastructure Code</p>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">25</div>
+                    <div class="stat-label">Total Files</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">280 KB</div>
+                    <div class="stat-label">Total Size</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Public Access</div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="content">
+            <!-- Documentation Section -->
+            <div class="section">
+                <div class="section-header">
+                    <span class="section-icon">📚</span>
+                    <h2 class="section-title">Documentation</h2>
+                    <span class="section-count">5 files</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">1</div>
+                            <div class="file-name">README.md</div>
+                            <div class="file-size">6.6 KB</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/docs/README.md" class="file-link" target="_blank">View</a>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">2</div>
+                            <div class="file-name">architecture.md</div>
+                            <div class="file-size">13.3 KB</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/docs/architecture.md" class="file-link" target="_blank">View</a>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">3</div>
+                            <div class="file-name">production-readiness-plan.md</div>
+                            <div class="file-size">8.5 KB</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/docs/production-readiness-plan.md" class="file-link" target="_blank">View</a>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">4</div>
+                            <div class="file-name">INVENTORY.md</div>
+                            <div class="file-size">8.5 KB</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/docs/INVENTORY.md" class="file-link" target="_blank">View</a>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">5</div>
+                            <div class="file-name">PUBLIC-LINKS.md</div>
+                            <div class="file-size">9.5 KB</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/docs/PUBLIC-LINKS.md" class="file-link" target="_blank">View</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Terraform Section -->
+            <div class="section">
+                <div class="section-header">
+                    <span class="section-icon">🔧</span>
+                    <h2 class="section-title">Terraform Infrastructure</h2>
+                    <span class="section-count">10 files</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">6</div>
+                            <div class="file-name">versions.tf</div>
+                            <div class="file-size">359 B</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/terraform-backup/versions.tf" class="file-link" target="_blank">View</a>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">7</div>
+                            <div class="file-name">variables.tf</div>
+                            <div class="file-size">264 B</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/terraform-backup/variables.tf" class="file-link" target="_blank">View</a>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">8</div>
+                            <div class="file-name">locals.tf</div>
+                            <div class="file-size">202 B</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/terraform-backup/locals.tf" class="file-link" target="_blank">View</a>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">9</div>
+                            <div class="file-name">outputs.tf</div>
+                            <div class="file-size">694 B</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/terraform-backup/outputs.tf" class="file-link" target="_blank">View</a>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">10</div>
+                            <div class="file-name">apigateway.tf</div>
+                            <div class="file-size">930 B</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/terraform-backup/apigateway.tf" class="file-link" target="_blank">View</a>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">11</div>
+                            <div class="file-name">dynamodb.tf</div>
+                            <div class="file-size">210 B</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/terraform-backup/dynamodb.tf" class="file-link" target="_blank">View</a>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">12</div>
+                            <div class="file-name">s3.tf</div>
+                            <div class="file-size">1.2 KB</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/terraform-backup/s3.tf" class="file-link" target="_blank">View</a>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">13</div>
+                            <div class="file-name">lambda.tf</div>
+                            <div class="file-size">1.0 KB</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/terraform-backup/lambda.tf" class="file-link" target="_blank">View</a>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">14</div>
+                            <div class="file-name">iam.tf</div>
+                            <div class="file-size">1.0 KB</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/terraform-backup/iam.tf" class="file-link" target="_blank">View</a>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">15</div>
+                            <div class="file-name">documentation.tf</div>
+                            <div class="file-size">1.0 KB</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/terraform-backup/documentation.tf" class="file-link" target="_blank">View</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Application Code Section -->
+            <div class="section">
+                <div class="section-header">
+                    <span class="section-icon">💻</span>
+                    <h2 class="section-title">Application Code</h2>
+                    <span class="section-count">2 files</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">16</div>
+                            <div class="file-name">lambda_function.py</div>
+                            <div class="file-size">3.1 KB</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/terraform-backup/lambda_src/lambda_function.py" class="file-link" target="_blank">View</a>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">17</div>
+                            <div class="file-name">index.html.tpl</div>
+                            <div class="file-size">27.5 KB</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/terraform-backup/website/index.html.tpl" class="file-link" target="_blank">View</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- State Files Section -->
+            <div class="section">
+                <div class="section-header">
+                    <span class="section-icon">📦</span>
+                    <h2 class="section-title">State & Configuration</h2>
+                    <span class="section-count">5 files</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">18</div>
+                            <div class="file-name">terraform.tfstate</div>
+                            <div class="file-size">64.0 KB</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/terraform-backup/terraform.tfstate" class="file-link" target="_blank">View</a>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">19</div>
+                            <div class="file-name">terraform.tfstate.backup</div>
+                            <div class="file-size">64.0 KB</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/terraform-backup/terraform.tfstate.backup" class="file-link" target="_blank">View</a>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">20</div>
+                            <div class="file-name">tfplan</div>
+                            <div class="file-size">34.9 KB</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/terraform-backup/tfplan" class="file-link" target="_blank">View</a>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">21</div>
+                            <div class="file-name">.terraform.lock.hcl</div>
+                            <div class="file-size">3.6 KB</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/terraform-backup/.terraform.lock.hcl" class="file-link" target="_blank">View</a>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">22</div>
+                            <div class="file-name">.gitignore</div>
+                            <div class="file-size">67 B</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/terraform-backup/.gitignore" class="file-link" target="_blank">View</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Documentation Backup Section -->
+            <div class="section">
+                <div class="section-header">
+                    <span class="section-icon">📄</span>
+                    <h2 class="section-title">Documentation Backup</h2>
+                    <span class="section-count">3 files</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">23</div>
+                            <div class="file-name">README.md (backup)</div>
+                            <div class="file-size">6.6 KB</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/terraform-backup/docs/README.md" class="file-link" target="_blank">View</a>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">24</div>
+                            <div class="file-name">architecture.md (backup)</div>
+                            <div class="file-size">13.3 KB</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/terraform-backup/docs/architecture.md" class="file-link" target="_blank">View</a>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-number">25</div>
+                            <div class="file-name">production-readiness-plan.md (backup)</div>
+                            <div class="file-size">8.5 KB</div>
+                        </div>
+                        <a href="https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/terraform-backup/docs/production-readiness-plan.md" class="file-link" target="_blank">View</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Download All Section -->
+            <div class="download-all">
+                <h3>📥 Download All Files</h3>
+                <p>Use AWS CLI to download everything (no authentication required):</p>
+                <code>aws s3 cp s3://nordvik-coffee-project-docs/ ./nordvik-coffee-docs/ --recursive --no-sign-request</code>
+            </div>
+        </div>
+        
+        <footer>
+            <p><strong>Nordvik Coffee Project Documentation</strong></p>
+            <p>Bucket: <code>nordvik-coffee-project-docs</code> | Region: eu-central-1</p>
+            <p>Last Updated: November 4, 2026 | All files are publicly accessible</p>
+            <p style="margin-top: 12px;">
+                <a href="https://nordvik-coffee-6d9ceed2.s3-website.eu-central-1.amazonaws.com" target="_blank">View Live Website</a>
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
