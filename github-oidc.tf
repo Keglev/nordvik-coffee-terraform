@@ -43,11 +43,6 @@ resource "aws_iam_role" "github_actions" {
     ]
   })
 
-  # Force the role to be recreated if trust policy changes
-  lifecycle {
-    create_before_destroy = true
-  }
-
   tags = {
     Name        = "${var.project_name}-github-actions-role"
     Environment = "production"
