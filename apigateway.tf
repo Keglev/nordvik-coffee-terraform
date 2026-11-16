@@ -3,7 +3,11 @@ resource "aws_apigatewayv2_api" "reviews" {
   protocol_type = "HTTP"
 
   cors_configuration {
-    allow_origins = ["http://${aws_s3_bucket_website_configuration.site.website_endpoint}"]
+    allow_origins = [
+      "https://${var.domain_name}",
+      "https://www.${var.domain_name}",
+      "https://${aws_cloudfront_distribution.site.domain_name}"
+    ]
     allow_methods = ["GET", "POST", "OPTIONS"]
     allow_headers = ["content-type"]
   }

@@ -9,3 +9,9 @@ variable "project_name" {
   type        = string
   default     = "nordvik-coffee"
 }
+
+variable "domain_name" {
+  description = "Custom domain name for the website"
+  type        = string
+  default     = "nordvik-coffee.click"
+}

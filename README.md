@@ -4,7 +4,7 @@ A production-ready serverless website with review functionality, deployed on AWS
 
 ## 🌐 Live Demo
 
-- **Website**: http://nordvik-coffee-6d9ceed2.s3-website.eu-central-1.amazonaws.com
+- **Website**: https://nordvik-coffee.click (custom domain with HTTPS)
 - **API Endpoint**: https://ldcninwmmj.execute-api.eu-central-1.amazonaws.com/reviews
 - **Documentation Hub**: https://nordvik-coffee-project-docs.s3.eu-central-1.amazonaws.com/docs/index.html
 
@@ -30,11 +30,28 @@ This project demonstrates a complete cloud infrastructure setup for a coffee sho
        │
        ▼
 ┌─────────────────────────────────────────┐
-│  S3 Static Website Hosting              │
-│  - HTML/CSS/JavaScript                  │
-│  - Public read access                   │
+│  Route53 DNS                            │
+│  - nordvik-coffee.click                 │
+│  - www.nordvik-coffee.click             │
 └──────┬──────────────────────────────────┘
        │
+       ▼
+┌─────────────────────────────────────────┐
+│  CloudFront Distribution (CDN)          │
+│  - HTTPS/TLS 1.2                        │
+│  - Global edge locations                │
+│  - ACM SSL Certificate                  │
+│  - DDoS protection (Shield)             │
+└──────┬──────────────────────────────────┘
+       │
+       ▼
+┌─────────────────────────────────────────┐
+│  S3 Bucket (Private)                    │
+│  - HTML/CSS/JavaScript                  │
+│  - Origin Access Control (OAC)          │
+└──────┬──────────────────────────────────┘
+       │
+       │ (Reviews Feature)
        ▼
 ┌─────────────────────────────────────────┐
 │  API Gateway (HTTP API)                 │
@@ -114,8 +131,10 @@ nordvik-coffee-terraform/
 │   └── lambda_function.py         # Lambda function code
 ├── website/
 │   └── index.html.tpl             # Website template
+├── acm.tf                         # ACM SSL certificate
 ├── apigateway.tf                  # API Gateway configuration
 ├── budgets.tf                     # AWS Budget alerts
+├── cloudfront.tf                  # CloudFront CDN distribution
 ├── documentation.tf               # Documentation S3 bucket
 ├── dynamodb.tf                    # DynamoDB table
 ├── github-oidc.tf                 # GitHub OIDC integration
@@ -123,6 +142,7 @@ nordvik-coffee-terraform/
 ├── lambda.tf                      # Lambda function
 ├── locals.tf                      # Local variables
 ├── outputs.tf                     # Terraform outputs
+├── route53.tf                     # DNS configuration
 ├── s3.tf                          # S3 website bucket
 ├── variables.tf                   # Input variables
 ├── versions.tf                    # Provider versions
@@ -177,6 +197,18 @@ Every push to the `main` branch automatically:
 
 ## 🔐 Security Features
 
+### HTTPS/TLS
+- SSL certificate from AWS Certificate Manager (ACM)
+- TLS 1.2 minimum (modern security standards)
+- Automatic HTTP to HTTPS redirect
+- Custom domain with secure DNS (DNSSEC-ready)
+
+### CloudFront Security
+- Origin Access Control (OAC) - S3 bucket is private
+- AWS Shield Standard (DDoS protection) included
+- WAF-ready (Web Application Firewall can be added)
+- Geo-restriction capabilities
+
 ### OIDC Authentication
 - GitHub Actions uses OIDC (OpenID Connect) to authenticate with AWS
 - No long-lived AWS credentials stored in GitHub
@@ -207,11 +239,13 @@ Every push to the `main` branch automatically:
 **Forecasted spend:** ~$19/month
 
 ### Cost Breakdown (Estimated)
+- CloudFront: ~$1.00/month (data transfer)
 - S3: ~$0.50/month
 - Lambda: ~$0.20/month (within free tier)
 - DynamoDB: ~$0.00 (within free tier)
 - API Gateway: ~$1.00/month
-- Data Transfer: ~$1.00/month
+- Route53: ~$0.50/month (hosted zone)
+- ACM Certificate: Free
 
 ## 📊 Monitoring & Operations
 
@@ -219,6 +253,9 @@ Every push to the `main` branch automatically:
 
 | Resource | Name/ID | Purpose |
 |----------|---------|---------|
+| Route53 Hosted Zone | `nordvik-coffee.click` | DNS management |
+| CloudFront Distribution | (Auto-generated) | CDN and HTTPS |
+| ACM Certificate | `*.nordvik-coffee.click` | SSL/TLS certificate |
 | S3 Bucket (Website) | `nordvik-coffee-6d9ceed2` | Static website hosting |
 | S3 Bucket (Docs) | `nordvik-coffee-project-docs` | Documentation storage |
 | DynamoDB Table | `nordvik-coffee-reviews` | Review data storage |
@@ -231,8 +268,11 @@ Every push to the `main` branch automatically:
 ### Health Checks
 
 ```bash
-# Check website is accessible
-curl -I http://nordvik-coffee-6d9ceed2.s3-website.eu-central-1.amazonaws.com
+# Check website is accessible (HTTPS)
+curl -I https://nordvik-coffee.click
+
+# Check CloudFront distribution
+aws cloudfront list-distributions --query "DistributionList.Items[?contains(Aliases.Items, 'nordvik-coffee.click')].{Id:Id,Status:Status,DomainName:DomainName}"
 
 # Check API is working
 curl https://ldcninwmmj.execute-api.eu-central-1.amazonaws.com/reviews
@@ -242,6 +282,9 @@ aws logs tail /aws/lambda/nordvik-coffee-reviews-handler --follow
 
 # Check DynamoDB table status
 aws dynamodb describe-table --table-name nordvik-coffee-reviews
+
+# Check SSL certificate status
+aws acm list-certificates --region us-east-1 --query "CertificateSummaryList[?DomainName=='nordvik-coffee.click']"
 ```
 
 ## 🔄 Making Changes
@@ -274,8 +317,14 @@ aws dynamodb describe-table --table-name nordvik-coffee-reviews
 **Problem**: GitHub Actions fails with "Not authorized to perform sts:AssumeRoleWithWebIdentity"
 - **Solution**: Check that the IAM role trust policy includes your GitHub repository
 
+**Problem**: CloudFront distribution shows old content
+- **Solution**: Invalidate CloudFront cache: `aws cloudfront create-invalidation --distribution-id <ID> --paths "/*"`
+
+**Problem**: SSL certificate not validating
+- **Solution**: Check Route53 CNAME records for certificate validation
+
 **Problem**: Website returns 403 Forbidden
-- **Solution**: Verify S3 bucket policy allows public read access
+- **Solution**: Verify S3 bucket policy allows CloudFront OAC access
 
 **Problem**: Lambda function fails
 - **Solution**: Check CloudWatch Logs: `/aws/lambda/nordvik-coffee-reviews-handler`

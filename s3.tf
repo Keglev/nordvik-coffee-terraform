@@ -6,44 +6,39 @@ resource "aws_s3_bucket" "site" {
   bucket = "${var.project_name}-${random_id.bucket_suffix.hex}"
 }
 
+# Keep bucket private - CloudFront will access via OAC
 resource "aws_s3_bucket_public_access_block" "site" {
   bucket = aws_s3_bucket.site.id
 
-  block_public_acls       = false
-  ignore_public_acls      = false
-  block_public_policy     = false
-  restrict_public_buckets = false
+  block_public_acls       = true
+  ignore_public_acls      = true
+  block_public_policy     = true
+  restrict_public_buckets = true
 }
 
-resource "aws_s3_bucket_website_configuration" "site" {
-  bucket = aws_s3_bucket.site.id
-
-  index_document {
-    suffix = "index.html"
-  }
-
-  error_document {
-    key = "index.html"
-  }
-}
-
-resource "aws_s3_bucket_policy" "public_read" {
+# Bucket policy allowing CloudFront access via OAC
+resource "aws_s3_bucket_policy" "cloudfront_read" {
   bucket = aws_s3_bucket.site.id
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Sid       = "PublicReadGetObject"
-        Effect    = "Allow"
-        Principal = "*"
-        Action    = "s3:GetObject"
-        Resource  = "${aws_s3_bucket.site.arn}/*"
+        Sid    = "AllowCloudFrontServicePrincipal"
+        Effect = "Allow"
+        Principal = {
+          Service = "cloudfront.amazonaws.com"
+        }
+        Action   = "s3:GetObject"
+        Resource = "${aws_s3_bucket.site.arn}/*"
+        Condition = {
+          StringEquals = {
+            "AWS:SourceArn" = aws_cloudfront_distribution.site.arn
+          }
+        }
       }
     ]
   })
-
-  depends_on = [aws_s3_bucket_public_access_block.site]
 }
 
 resource "aws_s3_object" "index" {
